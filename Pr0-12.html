@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>REST API Integration</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f3;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 500px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px #bbb;
+        }
+
+        input {
+            padding: 10px;
+            width: 80%;
+            margin: 10px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #2874a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1b4f72;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f4f6f7;
+            border-radius: 8px;
+        }
+
+        img {
+            width: 100px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>REST API Integration</h1>
+
+        <p>Enter the number of users to fetch:</p>
+
+        <input type="number" id="userCount"
+               placeholder="Enter number (1-5)"
+               min="1" max="5">
+
+        <br>
+
+        <button onclick="fetchUsers()">Get Users</button>
+
+        <div id="result">
+            User details will appear here.
+        </div>
+
+    </div>
+
+    <script>
+
+        // JavaScript function to fetch API data
+        async function fetchUsers() {
+
+            let count = document.getElementById("userCount").value;
+            let result = document.getElementById("result");
+
+            // Input validation
+            if (count === "" || count < 1 || count > 5 ||
+                !Number.isInteger(Number(count))) {
+
+                result.innerHTML =
+                    "<p style='color:red'>Please enter a number between 1 and 5.</p>";
+
+                return;
+            }
+
+            result.innerHTML = "Loading user details...";
+
+            try {
+
+                // API call using fetch()
+                const response = await fetch(
+                    "https://randomuser.me/api/?results=" + count
+                );
+
+                // Check API response
+                if (!response.ok) {
+                    throw new Error("API request failed!");
+                }
+
+                // Convert response into JSON
+                const data = await response.json();
+
+                // Process and display API data
+                displayUsers(data.results);
+
+                console.log("API Data:", data);
+
+            }
+
+            catch (error) {
+
+                // Error handling and debugging
+                console.error("Error:", error);
+
+                result.innerHTML =
+                    "<p style='color:red'>Unable to fetch data. Please check your internet connection and try again.</p>";
+            }
+        }
+
+        // Function to display fetched users
+        function displayUsers(users) {
+
+            let result = document.getElementById("result");
+
+            result.innerHTML = "";
+
+            users.forEach(function(user) {
+
+                result.innerHTML += `
+                    <div style="margin:20px; border-bottom:1px solid #ccc; padding:10px;">
+
+                        <img src="${user.picture.large}" alt="User photo">
+
+                        <h3>${user.name.first} ${user.name.last}</h3>
+
+                        <p>Email: ${user.email}</p>
+
+                        <p>Country: ${user.location.country}</p>
+
+                    </div>
+                `;
+
+            });
+        }
+
+    </script>
+
+</body>
+</html>
